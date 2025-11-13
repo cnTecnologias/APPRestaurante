@@ -81,3 +81,74 @@ body {
 .carrito-header {
     cursor: pointer;
 }
+
+
+/* Modal oculto por defecto */
+.modal-carrito {
+    display: none; 
+    position: fixed; 
+    z-index: 1000; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgba(0,0,0,0.5);
+}
+
+/* Contenido del modal */
+.contenido-carrito {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 400px;
+}
+
+.cerrar {
+    float: right;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.producto-modal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.producto-modal input {
+    width: 50px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ver por las dudas o eliminar
+.producto-carrito {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.producto-carrito .cantidad-control {
+    display: flex;
+    align-items: center;
+}
+
+.producto-carrito button {
+    margin: 0 5px;
+}*/

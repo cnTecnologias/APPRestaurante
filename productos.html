@@ -12,6 +12,7 @@
     <div class="carrito-header" onclick="verCarrito()">
         🛒 <span id="contador-carrito">0</span> | $<span id="total-carrito">0</span>
     </div>
+
 </header>
     <h1 id="titulo-categoria">Categoría</h1>
     <div id="productos" class="productos"></div>
@@ -22,6 +23,16 @@
         <p id="total"></p>
         <button onclick="confirmarPedido()">Confirmar pedido</button>
     </div>
+<!-- Modal del carrito -->
+<div id="modal-carrito" class="modal-carrito">
+    <div class="contenido-carrito">
+        <span class="cerrar" onclick="cerrarCarrito()">&times;</span>
+        <h2>Carrito</h2>
+        <div id="detalles-carrito"></div>
+        <p id="total-modal"></p>
+        <button onclick="confirmarPedido()">Confirmar pedido</button>
+    </div>
+</div>
 
     <script src="script.js"></script>
 </body>

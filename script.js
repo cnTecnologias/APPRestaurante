@@ -31,7 +31,7 @@ const productosPorCategoria = {
 // Carrito
 let carrito = [];
 
-// Función para cargar productos
+// Función para cargar productos (ojo ver)
 function cargarProductos(categoria) {
     document.getElementById("titulo-categoria").innerText = categoria;
     const contenedor = document.getElementById("productos");
@@ -43,21 +43,46 @@ function cargarProductos(categoria) {
         div.innerHTML = `
             <h3>${p.nombre}</h3>
             <p>Precio: $${p.precio}</p>
-            <label>Cantidad: <input type="number" min="1" value="1" id="cant-${categoria}-${index}"></label>
+            <div class="cantidad-control">
+                <button onclick="cambiarCantidad('${categoria}', ${index}, -1)">–</button>
+                <span id="cant-${categoria}-${index}">1</span>
+                <button onclick="cambiarCantidad('${categoria}', ${index}, 1)">+</button>
+            </div>
             <button onclick="agregarAlCarrito('${categoria}', ${index})">Agregar al carrito</button>
         `;
         contenedor.appendChild(div);
     });
 }
+// Cambiar la Cantidad  (ojo ver)
+function cambiarCantidad(categoria, index, cambio) {
+    const span = document.getElementById(`cant-${categoria}-${index}`);
+    let cantidad = parseInt(span.textContent) + cambio;
+    if (cantidad < 1) cantidad = 1; // nunca menos de 1
+    span.textContent = cantidad;
+}
+
+
+
 
 // Agregar al carrito
 function agregarAlCarrito(categoria, index) {
-    const cantidad = parseInt(document.getElementById(`cant-${categoria}-${index}`).value);
+    const span = document.getElementById(`cant-${categoria}-${index}`);
+    let cantidad = parseInt(span.textContent);
+
+    // Validar cantidad
+    if (isNaN(cantidad) || cantidad < 1) cantidad = 1;
+
     const producto = productosPorCategoria[categoria][index];
-    carrito.push({ ...producto, cantidad });
+
+    const existente = carrito.find(p => p.nombre === producto.nombre);
+    if (existente) {
+        existente.cantidad += cantidad;
+    } else {
+        carrito.push({ ...producto, cantidad });
+    }
+
     actualizarCarrito();
 }
-
 // Mostrar carrito
 function actualizarCarrito() {
     const contenedor = document.getElementById("carrito");
@@ -109,20 +134,95 @@ if (window.location.href.includes("productos.html")) {
     cargarProductos(categoria);
 }
 
-function agregarAlCarrito(categoria, index) {
-    const cantidad = parseInt(document.getElementById(`cant-${categoria}-${index}`).value);
-    const producto = productosPorCategoria[categoria][index];
 
-    // Buscar si ya está en el carrito
-    const existente = carrito.find(p => p.nombre === producto.nombre);
+function verCarrito() {
+    document.getElementById("modal-carrito").style.display = "block";
+    mostrarCarritoModal();
+}
 
-    if (existente) {
-        // Si ya existe, solo sumamos la cantidad
-        existente.cantidad += cantidad;
-    } else {
-        // Si no existe, lo agregamos
-        carrito.push({ ...producto, cantidad });
+function cerrarCarrito() {
+    document.getElementById("modal-carrito").style.display = "none";
+}
+
+// Eliminar producto del carrito
+function eliminarProducto(index) {
+    carrito.splice(index, 1);
+    actualizarCarrito();      // Actualiza contador y total en header
+    mostrarCarritoModal();    // Actualiza modal
+}
+
+// Actualizar cantidad de un producto
+function actualizarCantidad(index, nuevaCantidad) {
+    const cantidad = parseInt(nuevaCantidad);
+    if (cantidad <= 0) return;
+    carrito[index].cantidad = cantidad;
+    actualizarCarrito();
+    mostrarCarritoModal();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function mostrarCarritoModal() {
+    const detalles = document.getElementById("detalles-carrito");
+    const totalModal = document.getElementById("total-modal");
+
+    if (carrito.length === 0) {
+        detalles.innerHTML = "<p>No hay productos en el carrito</p>";
+        totalModal.innerText = "";
+        return;
     }
 
-    actualizarCarrito();
+    let html = "";
+    let total = 0;
+
+ carrito.forEach((p, i) => {
+    total += p.precio * p.cantidad;
+    html += `
+        <div class="producto-modal">
+            <span>${p.nombre}</span>
+            <div class="cantidad-control">
+                <button onclick="modificarCantidadCarrito(${i}, -1)">–</button>
+                <span id="cant-modal-${i}">${p.cantidad}</span>
+                <button onclick="modificarCantidadCarrito(${i}, 1)">+</button>
+            </div>
+            <span>$${p.precio * p.cantidad}</span>
+            <button onclick="eliminarProducto(${i})">❌ Quitar</button>
+        </div>
+    `;
+});
+
+    detalles.innerHTML = html;
+    totalModal.innerText = `Total: $${total}`;
 }
+
+function modificarCantidadCarrito(index, cambio) {
+    carrito[index].cantidad += cambio;
+
+    if (carrito[index].cantidad < 1) {
+        // Si baja a 0, eliminamos el producto
+        carrito.splice(index, 1);
+    }
+
+    actualizarCarrito();      // Actualiza contador y total en header
+    mostrarCarritoModal();    // Si usas modal, actualiza ahí también
+}
+
+
+
+
+
+
