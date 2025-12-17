@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+      <header class="barra-superior">
+        <button id="btn-volver" onclick="volverAtras()">← Volver</button>
+    <div class="marca">Mi Restaurante 🍕</div>
+    <div class="carrito-header" onclick="verCarrito()">
+        🛒 <span id="contador-carrito">0</span> | $<span id="total-carrito">0</span>
+    </div>
+
+</header>
+    <h1 id="titulo-categoria">Categoría</h1>
+    <div id="productos" class="productos"></div>
+
+    <h2>Carrito</h2>
+    <div id="carrito" class="carrito">
+        <p>No hay productos agregados</p>
+        <p id="total"></p>
+        <button onclick="confirmarPedido()">Confirmar pedido</button>
+    </div>
+<!-- Modal del carrito -->
+<div id="modal-carrito" class="modal-carrito">
+    <div class="contenido-carrito">
+        <span class="cerrar" onclick="cerrarCarrito()">&times;</span>
+        <h2>Carrito</h2>
+        <div id="detalles-carrito"></div>
+        <p id="total-modal"></p>
+        <button onclick="confirmarPedido()">Confirmar pedido</button>
+    </div>
+</div>
+
+    <script src="script.js"></script>
+</body>
+</html>
