@@ -3,6 +3,8 @@
 
 const express = require("express");
 const app = express();
+const cors = require("cors");
+app.use(cors());
 const PORT = 3000;
 
 app.get("/", (req, res) => {
@@ -16,7 +18,7 @@ app.listen(PORT, () => {
 
 
 
-// Datos
+// Datos Lista de productos de ejemplo
 const productosPorCategoria = {
     pizzas: [
         { nombre: "Muzza", precio: 1200 },
@@ -26,8 +28,31 @@ const productosPorCategoria = {
     bebidas: [
         { nombre: "Coca-Cola", precio: 400 },
         { nombre: "Agua", precio: 300 }
-    ]
+    ],
+    postres: [
+        { nombre: "Helado", precio: 500 },
+        { nombre: "Brownie", precio: 600 }
+    ],
+    Hamburguesa: [
+    { nombre: "Clasica", precio: 1300 },
+    { nombre: "Doble Carne", precio: 1800 }
+],
+ Hamburlomo: [
+    { nombre: "Clasico", precio: 1300 },
+    { nombre: "veggie", precio: 1800 }
+],
+ Lomitos: [
+    { nombre: "Lomito Clasico", precio: 1300 },
+    { nombre: "Lomito de Pollo", precio: 1800 },
+    { nombre: "Lomito de Cerdo", precio: 1800 }
+]
 };
+
+
+
+
+
+
 
 // Rutas
 app.get("/categorias", (req, res) => {
@@ -45,9 +70,6 @@ app.get("/productos", (req, res) => {
 });
 
 // Servidor
-app.listen(PORT, () => {
-    console.log(`Servidor escuchando en http://localhost:${PORT}`);
-});
 
 
 
