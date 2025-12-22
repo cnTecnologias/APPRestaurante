@@ -13,11 +13,7 @@
     <div class="carrito-header" onclick="verCarrito()">
         🛒 <span id="contador-carrito">0</span> | $<span id="total-carrito">0</span>
     </div>
-    <!-- Duplicado puede propocionar bugs////////////////////
-
-    <div class="carrito-header" onclick="verCarrito()">
-    🛒 <span id="contador-carrito">0</span> | $<span id="total-carrito">0</span>
-</div>-->
+   
 </header>
 
 <!-- Ampliacion del carrito -->
@@ -35,28 +31,13 @@
 
 
 
-    <h1>Elige una categoría</h1>
-    <div class="categorias">
-        <div class="categoria" onclick="irProductos('pizzas')">Pizza</div>
-        <div class="categoria" onclick="irProductos('Hamburlomo')">Hamburlomo</div>
-        <div class="categoria" onclick="irProductos('Hamburguesa')">Hamburguesa</div>
-        <div class="categoria" onclick="irProductos('Lomitos')">Lomito</div>
-        <div class="categoria" onclick="irProductos('bebidas')">Bebidas</div>
-        <div class="categoria" onclick="irProductos('postres')">Postres</div>
-    </div>
+   <h1>Elige una categoría</h1>
+<div class="categorias" id="lista-categorias"></div>
 
     <script src="script.js"></script>
 
 
-<!-- Anexo de categorias con pagina de los productos-->
 
-<script>
-function irProductos(categoria) {
-    // Redirige a productos.html pasando la categoría
-    window.location.href = `productos.html?categoria=${categoria}`;
-}
-cargarCategorias();
-</script>
 
 
 </body>

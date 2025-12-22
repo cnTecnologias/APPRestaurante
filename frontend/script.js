@@ -6,90 +6,116 @@ function volverAtras() {
 
 
 // Lista de productos de ejemplo
-const productosPorCategoria = {
-    pizzas: [
-        { nombre: "Muzza", precio: 1200 },
-        { nombre: "Napolitana", precio: 1400 },
-        { nombre: "Pepperoni", precio: 1500 }
-    ],
-    bebidas: [
-        { nombre: "Coca-Cola", precio: 400 },
-        { nombre: "Agua", precio: 300 }
-    ],
-    postres: [
-        { nombre: "Helado", precio: 500 },
-        { nombre: "Brownie", precio: 600 }
-    ],
-    Hamburguesa: [
-    { nombre: "Clasica", precio: 1300 },
-    { nombre: "Doble Carne", precio: 1800 }
-],
- Hamburlomo: [
-    { nombre: "Clasico", precio: 1300 },
-    { nombre: "veggie", precio: 1800 }
-],
- Lomitos: [
-    { nombre: "Lomito Clasico", precio: 1300 },
-    { nombre: "Lomito de Pollo", precio: 1800 },
-    { nombre: "Lomito de Cerdo", precio: 1800 }
-]
-};
+//Conexion front con back
+async function cargarCategorias() {
+    const res = await fetch("http://localhost:3000/categorias");
+    const categorias = await res.json();
+
+    const contenedor = document.getElementById("lista-categorias");
+    contenedor.innerHTML = "";
+
+    categorias.forEach(cat => {
+        const div = document.createElement("div");
+        div.classList.add("categoria");
+        div.innerHTML = `
+            <h3>${cat}</h3>
+            <button onclick="irACategoria('${cat}')">Ver</button>
+        `;
+        contenedor.appendChild(div);
+    });
+}
+
+
+function irACategoria(categoria) {
+    window.location.href = `productos.html?categoria=${categoria}`;
+}
 
 // Carrito
 let carrito = [];
 
 // Función para cargar productos (ojo ver)
-function cargarProductos(categoria) {
+async function cargarProductos(categoria) {
     document.getElementById("titulo-categoria").innerText = categoria;
     const contenedor = document.getElementById("productos");
-    contenedor.innerHTML = "";
+    contenedor.innerHTML = "Cargando...";
 
-    productosPorCategoria[categoria].forEach((p, index) => {
-        const div = document.createElement("div");
-        div.classList.add("producto");
-        div.innerHTML = `
-            <h3>${p.nombre}</h3>
-            <p>Precio: $${p.precio}</p>
-            <div class="cantidad-control">
-                <button onclick="cambiarCantidad('${categoria}', ${index}, -1)">–</button>
-                <span id="cant-${categoria}-${index}">1</span>
-                <button onclick="cambiarCantidad('${categoria}', ${index}, 1)">+</button>
-            </div>
-            <button onclick="agregarAlCarrito('${categoria}', ${index})">Agregar al carrito</button>
-        `;
-        contenedor.appendChild(div);
-    });
+    try {
+        const res = await fetch(`http://localhost:3000/productos?categoria=${categoria}`);
+        const productos = await res.json();
+
+        contenedor.innerHTML = "";
+
+        productos.forEach((p, index) => {
+            const div = document.createElement("div");
+            div.classList.add("producto");
+            div.innerHTML = `
+                <h3>${p.nombre}</h3>
+                <p>Precio: $${p.precio}</p>
+                <div class="cantidad-control">
+                    <button onclick="cambiarCantidad(${index}, -1)">–</button>
+                    <span id="cant-${index}">1</span>
+                    <button onclick="cambiarCantidad(${index}, 1)">+</button>
+                </div>
+                <button onclick="agregarAlCarrito(${index})">Agregar al carrito</button>
+            `;
+            contenedor.appendChild(div);
+        });
+
+        // guardamos los productos cargados
+        window.productosActuales = productos;
+
+    } catch (error) {
+        contenedor.innerHTML = "Error cargando productos";
+        console.error(error);
+    }
 }
 // Cambiar la Cantidad  (ojo ver)
-function cambiarCantidad(categoria, index, cambio) {
-    const span = document.getElementById(`cant-${categoria}-${index}`);
+function cambiarCantidad(index, cambio) {
+    const span = document.getElementById(`cant-${index}`);
     let cantidad = parseInt(span.textContent) + cambio;
-    if (cantidad < 1) cantidad = 1; // nunca menos de 1
+    if (cantidad < 1) cantidad = 1;
     span.textContent = cantidad;
 }
 
 
 
-
 // Agregar al carrito
-function agregarAlCarrito(categoria, index) {
-    const span = document.getElementById(`cant-${categoria}-${index}`);
+async function agregarAlCarrito(index) {
+    const span = document.getElementById(`cant-${index}`);
     let cantidad = parseInt(span.textContent);
-
-    // Validar cantidad
     if (isNaN(cantidad) || cantidad < 1) cantidad = 1;
 
-    const producto = productosPorCategoria[categoria][index];
+    const producto = window.productosActuales[index];
 
-    const existente = carrito.find(p => p.nombre === producto.nombre);
-    if (existente) {
-        existente.cantidad += cantidad;
-    } else {
-        carrito.push({ ...producto, cantidad });
-    }
+    await fetch("http://localhost:3000/carrito", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            nombre: producto.nombre,
+            precio: producto.precio,
+            cantidad
+        })
+    });
 
-    actualizarCarrito();
+    cargarCarrito();
 }
+//cargar carrito 
+async function cargarCarrito() {
+    const res = await fetch("http://localhost:3000/carrito");
+    carrito = await res.json();
+    actualizarCarrito();
+    if (document.getElementById("modal-carrito").style.display === "block") {
+        mostrarCarritoModal();
+    }
+}
+
+
+
+
+
+
 // Mostrar carrito
 function actualizarCarrito() {
     const contenedor = document.getElementById("carrito");
@@ -122,11 +148,18 @@ function actualizarCarrito() {
 }
 
 // Confirmar pedido (por ahora solo alerta)
-function confirmarPedido() {
-    if (carrito.length === 0) return alert("No hay productos en el carrito");
-    alert("Pedido confirmado!\n" + carrito.map(p => `${p.nombre} x${p.cantidad}`).join("\n"));
-    carrito = [];
-    actualizarCarrito();
+async function confirmarPedido() {
+    if (carrito.length === 0) {
+        alert("No hay productos en el carrito");
+        return;
+    }
+
+    await fetch("http://localhost:3000/carrito", {
+        method: "DELETE"
+    });
+
+    alert("Pedido confirmado");
+    cargarCarrito();
 }
 
 // --------------------------
@@ -151,21 +184,24 @@ function cerrarCarrito() {
     document.getElementById("modal-carrito").style.display = "none";
 }
 
+
+
+
 // Eliminar producto del carrito
-function eliminarProducto(index) {
-    carrito.splice(index, 1);
-    actualizarCarrito();      // Actualiza contador y total en header
-    mostrarCarritoModal();    // Actualiza modal
+async function eliminarProducto(index) {
+    const producto = carrito[index];
+
+    await fetch(`http://localhost:3000/carrito/${producto.nombre}`, {
+        method: "DELETE"
+    });
+
+    cargarCarrito();
 }
 
-// Actualizar cantidad de un producto
-function actualizarCantidad(index, nuevaCantidad) {
-    const cantidad = parseInt(nuevaCantidad);
-    if (cantidad <= 0) return;
-    carrito[index].cantidad = cantidad;
-    actualizarCarrito();
-    mostrarCarritoModal();
-}
+
+
+
+
 
 
 
@@ -216,41 +252,32 @@ function mostrarCarritoModal() {
     totalModal.innerText = `Total: $${total}`;
 }
 
-function modificarCantidadCarrito(index, cambio) {
-    carrito[index].cantidad += cambio;
-
-    if (carrito[index].cantidad < 1) {
-        // Si baja a 0, eliminamos el producto
-        carrito.splice(index, 1);
-    }
-
-    actualizarCarrito();      // Actualiza contador y total en header
-    mostrarCarritoModal();    // Si usas modal, actualiza ahí también
-}
 
 
+// Modificar carrito 
 
+async function modificarCantidadCarrito(index, cambio) {
+    const producto = carrito[index];
+    const nuevaCantidad = producto.cantidad + cambio;
 
-//Conexion front con back
-async function cargarCategorias() {
-    const res = await fetch("http://localhost:3000/categorias");
-    const categorias = await res.json();
-
-    const contenedor = document.getElementById("categorias");
-    contenedor.innerHTML = "";
-
-    categorias.forEach(cat => {
-        const div = document.createElement("div");
-        div.classList.add("categoria");
-        div.innerHTML = `
-            <h3>${cat}</h3>
-            <button onclick="irACategoria('${cat}')">Ver</button>
-        `;
-        contenedor.appendChild(div);
+    await fetch("http://localhost:3000/carrito", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            nombre: producto.nombre,
+            cantidad: nuevaCantidad
+        })
     });
+
+    cargarCarrito();
 }
 
 
-function irACategoria(categoria) {
-    window.location.href = `productos.html?categoria=${categoria}`;
+
+
+
+if (window.location.href.includes("index.html")) {
+    cargarCategorias();
 }
+
+cargarCarrito();
