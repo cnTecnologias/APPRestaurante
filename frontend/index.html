@@ -1,45 +1,50 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pedidos App</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pedidos App</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-   
-    <header class="barra-superior">
-    <div class="marca">Mi Restaurante 🍕</div>
-    <div class="carrito-header" onclick="verCarrito()">
-        🛒 <span id="contador-carrito">0</span> | $<span id="total-carrito">0</span>
-    </div>
-   
+
+<header class="barra-superior">
+  <div class="marca">Mi Restaurante 🍕</div>
+  <div class="carrito-header" onclick="verCarrito()">
+    🛒 <span id="contador-carrito">0</span> | $<span id="total-carrito">0</span>
+  </div>
 </header>
 
-<!-- Ampliacion del carrito -->
-<div id="modal-carrito" class="modal-carrito">
-    <div class="contenido-carrito">
-        <span class="cerrar" onclick="cerrarCarrito()">&times;</span>
-        <h2>Carrito</h2>
-        <div id="detalles-carrito"></div>
-        <p id="total-modal"></p>
-        <button onclick="confirmarPedido()">Confirmar pedido</button>
-    </div>
-</div>
-
-
-
-
-
-   <h1>Elige una categoría</h1>
+<h1>Elige una categoría</h1>
 <div class="categorias" id="lista-categorias"></div>
 
-    <script src="script.js"></script>
+<!-- Modal del carrito -->
+<div id="modal-carrito" class="modal-carrito">
+  <div class="contenido-carrito">
+    <span class="cerrar" onclick="cerrarCarrito()">&times;</span>
+    <h2>Carrito</h2>
 
+    <div id="detalles-carrito"></div>
+    <p id="total-modal"></p>
 
+    <div class="metodo-pago-modal">
+      <h4>Método de pago</h4>
 
+      <label>
+        <input type="radio" name="pago" value="Efectivo" checked>
+        Efectivo
+      </label>
 
+      <label>
+        <input type="radio" name="pago" value="Transferencia">
+        Transferencia
+      </label>
+    </div>
 
+    <button onclick="confirmarPedido()">Confirmar pedido</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
 </body>
-
 </html>

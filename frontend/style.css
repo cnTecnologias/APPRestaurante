@@ -104,6 +104,9 @@ body {
     border-radius: 10px;
     width: 90%;
     max-width: 400px;
+
+    max-height: 80vh;
+    overflow-y: auto;
 }
 
 .cerrar {
@@ -124,7 +127,18 @@ body {
 }
 
 
+.metodo-pago-modal {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #ccc;
+    text-align: left;
+}
 
+.metodo-pago-modal label {
+    display: block;
+    margin: 6px 0;
+    cursor: pointer;
+}
 
 
 
