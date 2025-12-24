@@ -284,12 +284,26 @@ async function confirmarPedido() {
   const telefono = "5493515447794";
   const url = `https://wa.me/${telefono}?text=${encodeURIComponent(resumen)}`;
 
-  await fetch("http://localhost:3000/carrito", { method: "DELETE" });
+ try {
+    // 3. Vaciamos el tanque en el Backend (SQL) para que no queden pedidos viejos
+    await fetch("http://localhost:3000/carrito", { method: "DELETE" });
 
-  window.open(url, "_blank");
-  carrito.items = [];
-  actualizarCarrito();
+    // 4. Abrimos WhatsApp en una pestaña nueva
+    window.open(url, "_blank");
+
+    // 5. Limpiamos la memoria local y refrescamos la vista
+    carrito.items = [];
+    actualizarHeaderCarrito(); // Pone el contador en 0 y el total en $0
+    cerrarCarrito();           // Cierra el modal automáticamente
+    
+    alert("¡Pedido enviado con éxito!");
+
+  } catch (error) {
+    console.error("Error al procesar el pedido:", error);
+    alert("Hubo un problema al conectar con el servidor.");
+  }
 }
+
 
 /* =========================
    INIT
