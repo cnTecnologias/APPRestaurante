@@ -273,34 +273,46 @@ function generarResumen(carrito) {
 }
 
 async function confirmarPedido() {
-  if (carrito.items.length === 0) {
-    alert("No hay productos en el carrito");
-    return;
-  }
-
   actualizarMetodoPago();
 
-  const resumen = generarResumen(carrito);
-  const telefono = "5493515447794";
-  const url = `https://wa.me/${telefono}?text=${encodeURIComponent(resumen)}`;
+  try {
+    // 1. Confirmar pedido en el backend
+    const res = await fetch("http://localhost:3000/pedido", {
+      method: "POST"
+    });
 
- try {
-    // 3. Vaciamos el tanque en el Backend (SQL) para que no queden pedidos viejos
+    const pedido = await res.json();
+
+    // 2. Generar resumen con datos REALES del pedido
+    const resumen = generarResumen(carrito);
+
+    const telefono = "5493515447794";
+    const textoWhatsApp =
+      `Pedido N° ${pedido.id}\n` +
+      `Fecha: ${pedido.fecha}\n\n` +
+      resumen;
+
+    // 3. Abrir WhatsApp
+    window.open(
+      `https://wa.me/${telefono}?text=${encodeURIComponent(textoWhatsApp)}`,
+      "_blank"
+    );
+
+    // 4. Limpiar backend
     await fetch("http://localhost:3000/carrito", { method: "DELETE" });
 
-    // 4. Abrimos WhatsApp en una pestaña nueva
-    window.open(url, "_blank");
-
-    // 5. Limpiamos la memoria local y refrescamos la vista
+    // 5. Limpiar frontend
     carrito.items = [];
-    actualizarHeaderCarrito(); // Pone el contador en 0 y el total en $0
-    cerrarCarrito();           // Cierra el modal automáticamente
-    
-    alert("¡Pedido enviado con éxito!");
+    actualizarHeaderCarrito();
+    cerrarCarrito();
+
+    alert(
+      `¡Pedido realizado!\n\nN° ${pedido.id}\n${pedido.fecha}`
+    );
 
   } catch (error) {
     console.error("Error al procesar el pedido:", error);
-    alert("Hubo un problema al conectar con el servidor.");
+    alert("No se pudo confirmar el pedido. Intente nuevamente.");
   }
 }
 

@@ -98,6 +98,23 @@ app.delete("/carrito", (req, res) => {
     carrito = [];
     res.json({ mensaje: "Pedido confirmado" });
 });
+
+//ID pedido - fecha hora
+let numeroPedido = 1;
+
+app.post("/pedido", (req, res) => {
+  const pedido = {
+    id: numeroPedido++,
+    fecha: new Date().toLocaleString("es-AR"),
+    items: carrito
+  };
+
+  carrito = []; // vaciamos carrito al confirmar
+
+  res.json(pedido);
+});
+
+
 // levantar server AL FINAL
 app.listen(PORT, () => {
     console.log(`Servidor escuchando en http://localhost:${PORT}`);
