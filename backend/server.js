@@ -3,7 +3,12 @@ const cors = require("cors");
 
 const app = express();
 const PORT = 3000;
-const db = require("./db");
+const {
+  obtenerCarrito,
+  agregarAlCarrito,
+  actualizarCantidad,
+  eliminarProducto
+} = require("./db");
 app.use(cors());
 app.use(express.json());
 
@@ -53,44 +58,52 @@ app.get("/productos", (req, res) => {
 });
 
 app.get("/carrito", (req, res) => {
-    res.json(carrito);
+  obtenerCarrito((err, items) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: "Error al leer el carrito" });
+    } else {
+      res.json(items);
+    }
+  });
 });
 
 app.post("/carrito", (req, res) => {
-    const { nombre, precio, cantidad } = req.body;
-
-    const existente = carrito.find(p => p.nombre === nombre);
-    if (existente) {
-        existente.cantidad += cantidad;
+  agregarAlCarrito(req.body, (err) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: "Error al agregar al carrito" });
     } else {
-        carrito.push({ nombre, precio, cantidad });
+      res.json({ mensaje: "Producto agregado" });
     }
-
-    res.json(carrito);
+  });
 });
 // Modificar cantidad de un producto
 app.put("/carrito", (req, res) => {
-    const { nombre, cantidad } = req.body;
+  const { nombre, cantidad } = req.body;
 
-    const producto = carrito.find(p => p.nombre === nombre);
-    if (!producto) {
-        return res.status(404).json({ error: "Producto no encontrado" });
-    }
-
-    if (cantidad <= 0) {
-        carrito = carrito.filter(p => p.nombre !== nombre);
+  actualizarCantidad(nombre, cantidad, (err) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: "Error al actualizar carrito" });
     } else {
-        producto.cantidad = cantidad;
+      res.json({ mensaje: "Cantidad actualizada" });
     }
-
-    res.json(carrito);
+  });
 });
 
 // Eliminar producto
 app.delete("/carrito/:nombre", (req, res) => {
-    const { nombre } = req.params;
-    carrito = carrito.filter(p => p.nombre !== nombre);
-    res.json(carrito);
+  const { nombre } = req.params;
+
+  eliminarProducto(nombre, (err) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: "Error al eliminar producto" });
+    } else {
+      res.json({ mensaje: "Producto eliminado" });
+    }
+  });
 });
 
 // Vaciar carrito (confirmar pedido)
