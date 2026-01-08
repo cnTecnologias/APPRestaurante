@@ -7,7 +7,10 @@ const {
   obtenerCarrito,
   agregarAlCarrito,
   actualizarCantidad,
-  eliminarProducto
+  eliminarProducto,
+  vaciarCarrito,
+  guardarPedido,
+  obtenerPedidos
 } = require("./db");
 app.use(cors());
 app.use(express.json());
@@ -42,7 +45,7 @@ const productosPorCategoria = {
     ]
 };
 
-let carrito = [];
+
 
 // Rutas
 app.get("/categorias", (req, res) => {
@@ -108,25 +111,66 @@ app.delete("/carrito/:nombre", (req, res) => {
 
 // Vaciar carrito (confirmar pedido)
 app.delete("/carrito", (req, res) => {
-    carrito = [];
-    res.json({ mensaje: "Pedido confirmado" });
+  vaciarCarrito((err) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: "Error al vaciar carrito" });
+    } else {
+      res.json({ mensaje: "Carrito vaciado" });
+    }
+  });
 });
-
 //ID pedido - fecha hora
 let numeroPedido = 1;
 
 app.post("/pedido", (req, res) => {
-  const pedido = {
-    id: numeroPedido++,
-    fecha: new Date().toLocaleString("es-AR"),
-    items: carrito
-  };
+  obtenerCarrito((err, items) => {
+    if (err) {
+      return res.status(500).json({ error: "Error al obtener carrito" });
+    }
 
-  carrito = []; // vaciamos carrito al confirmar
+    if (items.length === 0) {
+      return res.status(400).json({ error: "Carrito vacío" });
+    }
 
-  res.json(pedido);
+    let total = 0;
+    items.forEach(p => {
+      total += p.precio * p.cantidad;
+    });
+
+    const pedido = {
+      fecha: new Date().toLocaleString("es-AR"),
+      total,
+      metodoPago: req.body?.metodoPago || "Efectivo"
+    };
+
+    guardarPedido(pedido, (err) => {
+      if (err) {
+        return res.status(500).json({ error: "Error al guardar pedido" });
+      }
+
+      vaciarCarrito((err) => {
+        if (err) {
+          return res.status(500).json({ error: "Error al vaciar carrito" });
+        }
+
+        res.json({
+          mensaje: "Pedido confirmado",
+          pedido
+        });
+      });
+    });
+  });
 });
 
+app.get("/pedidos", (req, res) => {
+  obtenerPedidos((err, pedidos) => {
+    if (err) {
+      return res.status(500).json({ error: "Error al obtener pedidos" });
+    }
+    res.json(pedidos);
+  });
+});
 
 // levantar server AL FINAL
 app.listen(PORT, () => {

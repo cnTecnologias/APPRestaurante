@@ -8,13 +8,22 @@ const db = new sqlite3.Database("./database.db", (err) => {
   }
 });
 
-// Crear tabla carrito si no existe
+// Crear tabla carrito si no existe(carrito)
 db.run(`
   CREATE TABLE IF NOT EXISTS carrito (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nombre TEXT,
     precio INTEGER,
     cantidad INTEGER
+  )
+`);
+//crear tabla para pedidos 
+db.run(`
+  CREATE TABLE IF NOT EXISTS pedidos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    fecha TEXT,
+    total INTEGER,
+    metodo_pago TEXT
   )
 `);
 
@@ -71,10 +80,35 @@ function eliminarProducto(nombre, callback) {
   );
 }
 
+//Eliminar todo del carrito 
+function vaciarCarrito(callback) {
+  db.run("DELETE FROM carrito", callback);
+}
+
+//Guardar pedido 
+function guardarPedido(pedido, callback) {
+  const { fecha, total, metodoPago } = pedido;
+
+  db.run(
+    `
+    INSERT INTO pedidos (fecha, total, metodo_pago)
+    VALUES (?, ?, ?)
+    `,
+    [fecha, total, metodoPago],
+    callback
+  );
+}
+//ver pedidos 
+function obtenerPedidos(callback) {
+  db.all("SELECT * FROM pedidos", callback);
+}
 module.exports = {
   db,
   obtenerCarrito,
   agregarAlCarrito,
   actualizarCantidad,
-  eliminarProducto
+  eliminarProducto,
+  vaciarCarrito,
+  guardarPedido,
+  obtenerPedidos
 };
