@@ -85,23 +85,29 @@ function vaciarCarrito(callback) {
   db.run("DELETE FROM carrito", callback);
 }
 
+// 1. DEFINICIÓN (Asegurate que el nombre sea EXACTO)
+function obtenerPedidos(callback) {
+  db.all("SELECT * FROM pedidos", (err, rows) => {
+    if (err) return callback(err);
+    callback(null, rows);
+  });
+}
+
+
+
+
+
 //Guardar pedido 
 function guardarPedido(pedido, callback) {
   const { fecha, total, metodoPago } = pedido;
 
   db.run(
-    `
-    INSERT INTO pedidos (fecha, total, metodo_pago)
-    VALUES (?, ?, ?)
-    `,
+    `INSERT INTO pedidos (fecha, total, metodo_pago) VALUES (?, ?, ?)`,
     [fecha, total, metodoPago],
-    callback
+    callback // SQLite ejecutará este callback y nos dará el lastID en el server
   );
 }
-//ver pedidos 
-function obtenerPedidos(callback) {
-  db.all("SELECT * FROM pedidos", callback);
-}
+
 module.exports = {
   db,
   obtenerCarrito,

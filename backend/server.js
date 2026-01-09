@@ -124,38 +124,35 @@ app.delete("/carrito", (req, res) => {
 let numeroPedido = 1;
 
 app.post("/pedido", (req, res) => {
+  const metodoPago = req.body.metodoPago || "Efectivo"; 
+  
   obtenerCarrito((err, items) => {
-    if (err) {
-      return res.status(500).json({ error: "Error al obtener carrito" });
-    }
+    if (err) return res.status(500).json({ error: "Error al obtener carrito" });
+    if (items.length === 0) return res.status(400).json({ error: "Carrito vacío" });
 
-    if (items.length === 0) {
-      return res.status(400).json({ error: "Carrito vacío" });
-    }
-
-    let total = 0;
+    // 1. TENÉS QUE CALCULAR EL TOTAL ACÁ ADENTRO
+    let totalCalculado = 0;
     items.forEach(p => {
-      total += p.precio * p.cantidad;
+      totalCalculado += p.precio * p.cantidad;
     });
 
     const pedido = {
       fecha: new Date().toLocaleString("es-AR"),
-      total,
-      metodoPago: req.body?.metodoPago || "Efectivo"
+      total: totalCalculado, // <--- AHORA SÍ: Usamos la variable que acabamos de crear
+      metodoPago: metodoPago
     };
 
-    guardarPedido(pedido, (err) => {
-      if (err) {
-        return res.status(500).json({ error: "Error al guardar pedido" });
-      }
+    guardarPedido(pedido, function(err) {
+      if (err) return res.status(500).json({ error: "Error al guardar" });
+      
+      const nuevoId = this.lastID; 
 
       vaciarCarrito((err) => {
-        if (err) {
-          return res.status(500).json({ error: "Error al vaciar carrito" });
-        }
+        if (err) return res.status(500).json({ error: "Error al vaciar" });
 
         res.json({
           mensaje: "Pedido confirmado",
+          id: nuevoId,
           pedido
         });
       });
