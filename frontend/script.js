@@ -273,46 +273,58 @@ function generarResumen(carrito) {
 }
 
 async function confirmarPedido() {
-  actualizarMetodoPago();
+  // 1. Capturamos el método de pago antes de hacer nada
+  const radioActivo = document.querySelector('input[name="pago"]:checked') || 
+                      document.querySelector('input[name="pago-modal"]:checked');
+  
+  const metodoSeleccionado = radioActivo ? radioActivo.value : "Efectivo";
+
+  // Actualizamos el objeto carrito local para que el resumen de WhatsApp salga bien
+  carrito.metodoPago = metodoSeleccionado;
 
   try {
-    // 1. Confirmar pedido en el backend
+    // 2. Enviamos el pedido al backend con el método de pago en el BODY
     const res = await fetch("http://localhost:3000/pedido", {
-      method: "POST"
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        metodoPago: metodoSeleccionado
+      })
     });
 
-    const pedido = await res.json();
+    if (!res.ok) throw new Error("Error en el servidor");
 
-    // 2. Generar resumen con datos REALES del pedido
+    const pedidoBackend = await res.json();
+
+    // 3. Generar resumen para WhatsApp (usando el ID que viene del server)
     const resumen = generarResumen(carrito);
-
     const telefono = "5493515447794";
     const textoWhatsApp =
-      `Pedido N° ${pedido.id}\n` +
-      `Fecha: ${pedido.fecha}\n\n` +
+      `Pedido N° ${pedidoBackend.id || 'S/N'}\n` + // Usamos el ID del backend
+      `Fecha: ${pedidoBackend.pedido.fecha}\n\n` +
       resumen;
 
-    // 3. Abrir WhatsApp
+    // 4. Abrir WhatsApp
     window.open(
       `https://wa.me/${telefono}?text=${encodeURIComponent(textoWhatsApp)}`,
       "_blank"
     );
 
-    // 4. Limpiar backend
+    // 5. Limpiar backend (borrar carrito temporal)
     await fetch("http://localhost:3000/carrito", { method: "DELETE" });
 
-    // 5. Limpiar frontend
+    // 6. Limpiar frontend
     carrito.items = [];
     actualizarHeaderCarrito();
     cerrarCarrito();
 
-    alert(
-      `¡Pedido realizado!\n\nN° ${pedido.id}\n${pedido.fecha}`
-    );
+    alert(`¡Pedido realizado!\n\nN° ${pedidoBackend.id}\n${pedidoBackend.pedido.fecha}`);
 
   } catch (error) {
     console.error("Error al procesar el pedido:", error);
-    alert("No se pudo confirmar el pedido. Intente nuevamente.");
+    alert("No se pudo confirmar el pedido. Revisá que el servidor esté encendido.");
   }
 }
 
