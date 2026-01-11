@@ -115,3 +115,25 @@ async function cambiarEstado(id, estadoActual) {
         console.error("Error de conexión:", error);
     }
 }
+
+async function eliminarPedido(id) {
+    if(confirm("¿Seguro que querés eliminar el pedido #" + id + "?")) {
+        try {
+            // IMPORTANTE: Puerto 3000 y la ruta correcta
+            const response = await fetch(`http://localhost:3000/api/pedidos/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                // Si el server dice OK, lo borramos de la vista
+                pedidosCache = pedidosCache.filter(p => p.id !== id);
+                renderizarTabla(pedidosCache);
+                actualizarResumen(pedidosCache);
+            } else {
+                alert("Error al eliminar el pedido del servidor.");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+}
