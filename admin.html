@@ -1,0 +1,47 @@
+<head>
+    <meta charset="UTF-8">
+    <title>Syncro Dashboard</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<div class="admin-container">
+    <header class="admin-header">
+        <h1>📊 Syncro Dashboard</h1>
+        <button onclick="cargarDatosAdmin()" class="btn-refresh">🔄 Actualizar</button>
+    </header>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span>Total Recaudado</span>
+            <strong id="total-dinero">$0</strong>
+        </div>
+        <div class="stat-card">
+            <span>Pedidos Totales</span>
+            <strong id="total-pedidos">0</strong>
+        </div>
+    </div>
+
+    <div class="table-controls">
+        <input type="text" id="busqueda" placeholder="Buscar por fecha..." onkeyup="filtrar()">
+        <select id="filtro-pago" onchange="filtrar()">
+            <option value="todos">Todos los pagos</option>
+            <option value="Efectivo">Efectivo</option>
+            <option value="Transferencia">Transferencia</option>
+        </select>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha</th>
+                    <th>Método</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody id="lista-pedidos">
+                </tbody>
+        </table>
+    </div>
+    <script src="admin.js"></script>
+</div>

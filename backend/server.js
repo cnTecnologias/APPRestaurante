@@ -160,13 +160,24 @@ app.post("/pedido", (req, res) => {
   });
 });
 
+// --- RUTAS DE ADMINISTRACIÓN ---
+// verlo a futuro 
+// Ruta para obtener todos los pedidos (Solo para el dueño)
 app.get("/pedidos", (req, res) => {
-  obtenerPedidos((err, pedidos) => {
-    if (err) {
-      return res.status(500).json({ error: "Error al obtener pedidos" });
-    }
-    res.json(pedidos);
-  });
+    obtenerPedidos((err, pedidos) => {
+        if (err) {
+            console.error("Error al obtener pedidos:", err);
+            return res.status(500).json({ error: "Error interno del servidor" });
+        }
+        res.json(pedidos);
+    });
+});
+
+// Ruta para ver estadísticas rápidas 
+app.get("/api/admin/stats", (req, res) => {
+    // consultas de SQL más complejas a futuro
+    
+    res.json({ mensaje: "Puerto de estadísticas listo" });
 });
 
 // levantar server AL FINAL

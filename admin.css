@@ -1,0 +1,131 @@
+:root {
+    --bg-body: #f0f2f5;
+    --card-bg: #ffffff;
+    --text-main: #1c1e21;
+    --primary: #007bff;
+    --success: #28a745;
+    --danger: #dc3545;
+    --gray: #65676b;
+}
+
+body {
+    background-color: var(--bg-body);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-main);
+    margin: 0;
+    padding: 20px;
+}
+
+.admin-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+/* Tarjetas de Estadísticas */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.stat-card span {
+    display: block;
+    color: var(--gray);
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+.stat-card strong {
+    font-size: 1.8rem;
+    color: var(--primary);
+}
+
+/* Controles de búsqueda */
+.table-controls {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+#busqueda, #filtro-pago {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+}
+
+#busqueda { flex-grow: 1; }
+
+/* Tabla */
+.table-container {
+    background: var(--card-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background-color: #f8f9fa;
+    padding: 15px;
+    text-align: left;
+    border-bottom: 2px solid #dee2e6;
+    color: var(--gray);
+}
+
+td {
+    padding: 15px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+/* Badges de Pago */
+.badge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: white;
+}
+
+.badge.Efectivo { background-color: var(--success); }
+.badge.Transferencia { background-color: var(--primary); }
+
+/* Botones */
+.btn-refresh {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btn-borrar {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: transform 0.2s;
+}
+
+.btn-borrar:hover { transform: scale(1.2); }
