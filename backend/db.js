@@ -23,9 +23,10 @@ db.run(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     fecha TEXT,
     total INTEGER,
-    metodo_pago TEXT
-  )
-`);
+    metodo_pago TEXT,
+    estado TEXT DEFAULT 'Pendiente' 
+  )`);
+  
 
 // Obtener carrito
 function obtenerCarrito(callback) {
@@ -100,13 +101,24 @@ function obtenerPedidos(callback) {
 //Guardar pedido 
 function guardarPedido(pedido, callback) {
   const { fecha, total, metodoPago } = pedido;
-
+  // Agregamos 'estado' en el INSERT y le pasamos 'Pendiente'
   db.run(
-    `INSERT INTO pedidos (fecha, total, metodo_pago) VALUES (?, ?, ?)`,
-    [fecha, total, metodoPago],
-    callback // SQLite ejecutará este callback y nos dará el lastID en el server
+    `INSERT INTO pedidos (fecha, total, metodo_pago, estado) VALUES (?, ?, ?, ?)`,
+    [fecha, total, metodoPago, 'Pendiente'], 
+    callback
   );
 }
+function actualizarEstadoPedido(id, nuevoEstado, callback) {
+  db.run('UPDATE pedidos SET estado = ? WHERE id = ?', [nuevoEstado, id], callback);
+}
+
+db.run(`ALTER TABLE pedidos ADD COLUMN estado TEXT DEFAULT 'Pendiente'`, (err) => {
+    if (err) {
+        console.log("Aviso: La columna estado ya existe, todo ok.");
+    } else {
+        console.log("Éxito: Columna estado creada.");
+    }
+});
 
 module.exports = {
   db,
@@ -116,5 +128,6 @@ module.exports = {
   eliminarProducto,
   vaciarCarrito,
   guardarPedido,
-  obtenerPedidos
+  obtenerPedidos,
+  actualizarEstadoPedido
 };

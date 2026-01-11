@@ -180,6 +180,18 @@ app.get("/api/admin/stats", (req, res) => {
     res.json({ mensaje: "Puerto de estadísticas listo" });
 });
 
+app.put('/api/pedidos/:id/estado', (req, res) => {
+    const { id } = req.params;
+    const { nuevoEstado } = req.body;
+
+    const { actualizarEstadoPedido } = require("./db"); // Importamos la función
+
+    actualizarEstadoPedido(id, nuevoEstado, (err) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ mensaje: "Estado actualizado" });
+    });
+});
+
 // levantar server AL FINAL
 app.listen(PORT, () => {
     console.log(`Servidor escuchando en http://localhost:${PORT}`);

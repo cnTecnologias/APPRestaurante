@@ -18,17 +18,27 @@ async function cargarDatosAdmin() {
 
 // 2. DIBUJAR LA TABLA
 function renderizarTabla(lista) {
-    // CORREGIDO: Usamos el ID de tu HTML 'lista-pedidos'
     const tabla = document.getElementById("lista-pedidos");
     tabla.innerHTML = ""; 
 
+    // Usamos reverse() para ver los últimos pedidos arriba
     lista.reverse().forEach(pedido => {
         const fila = document.createElement("tr");
+        
+        // Si por alguna razón el pedido no tiene estado, le ponemos 'Pendiente' por defecto
+        const estadoActual = pedido.estado || 'Pendiente';
+        const claseEstado = estadoActual === 'Pendiente' ? 'estado-pendiente' : 'estado-entregado';
+
         fila.innerHTML = `
             <td>#${pedido.id}</td>
             <td>${pedido.fecha}</td>
             <td><span class="badge ${pedido.metodo_pago}">${pedido.metodo_pago}</span></td>
             <td><strong>$${pedido.total.toLocaleString("es-AR")}</strong></td>
+            <td>
+                <button class="btn-estado ${claseEstado}" onclick="cambiarEstado(${pedido.id}, '${estadoActual}')">
+                    ${estadoActual}
+                </button>
+            </td>
             <td><button class="btn-borrar" onclick="eliminarPedido(${pedido.id})">🗑️</button></td>
         `;
         tabla.appendChild(fila);
@@ -64,9 +74,44 @@ function actualizarResumen(lista) {
 document.addEventListener("DOMContentLoaded", cargarDatosAdmin);
 
 // Función extra para que no tire error si tocas el tacho (falta crear ruta en server)
-function eliminarPedido(id) {
-    if(confirm("¿Seguro que querés eliminar el pedido #" + id + "?")) {
-        console.log("Eliminando pedido...", id);
-        // Aquí iría un fetch con DELETE a futuro
+async function eliminarPedido(id) {
+    if(confirm("¿Seguro que querés eliminar el pedido #" + id + "? Esta acción no se puede deshacer.")) {
+        try {
+            const response = await fetch(`http://localhost:3000/api/pedidos/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                // Actualizamos la lista local y volvemos a dibujar
+                pedidosCache = pedidosCache.filter(p => p.id !== id);
+                renderizarTabla(pedidosCache);
+                actualizarResumen(pedidosCache);
+            } else {
+                alert("Error al eliminar el pedido del servidor.");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+}
+async function cambiarEstado(id, estadoActual) {
+    const nuevoEstado = estadoActual === 'Pendiente' ? 'Entregado' : 'Pendiente';
+    
+    try {
+        // CAMBIAMOS LA URL PARA QUE APUNTE AL PUERTO 3000
+        const response = await fetch(`http://localhost:3000/api/pedidos/${id}/estado`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nuevoEstado })
+        });
+
+        if (response.ok) {
+            console.log("Estado actualizado en el servidor");
+            cargarDatosAdmin(); 
+        } else {
+            console.error("Error en la respuesta del servidor");
+        }
+    } catch (error) {
+        console.error("Error de conexión:", error);
     }
 }
