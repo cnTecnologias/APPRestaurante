@@ -120,6 +120,10 @@ db.run(`ALTER TABLE pedidos ADD COLUMN estado TEXT DEFAULT 'Pendiente'`, (err) =
     }
 });
 
+function eliminarPedidoDB(id, callback) {
+  db.run("DELETE FROM pedidos WHERE id = ?", [id], callback);
+}
+
 module.exports = {
   db,
   obtenerCarrito,
@@ -129,5 +133,6 @@ module.exports = {
   vaciarCarrito,
   guardarPedido,
   obtenerPedidos,
-  actualizarEstadoPedido
+  actualizarEstadoPedido,
+  eliminarPedidoDB
 };

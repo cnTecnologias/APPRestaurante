@@ -191,6 +191,19 @@ app.put('/api/pedidos/:id/estado', (req, res) => {
         res.json({ mensaje: "Estado actualizado" });
     });
 });
+//Borrar un pedido del admin 
+app.delete('/api/pedidos/:id', (req, res) => {
+    const { id } = req.params;
+    const { eliminarPedidoDB } = require("./db"); // Importamos la función nueva
+
+    eliminarPedidoDB(id, (err) => {
+        if (err) {
+            console.error("Error al borrar pedido:", err.message);
+            return res.status(500).json({ error: "No se pudo borrar el pedido" });
+        }
+        res.json({ mensaje: "Pedido eliminado correctamente" });
+    });
+});
 
 // levantar server AL FINAL
 app.listen(PORT, () => {
