@@ -8,16 +8,34 @@
 </head>
 <body>
 
-<header class="barra-superior">
-  <div class="marca">Mi Restaurante 🍕</div>
-  <div class="carrito-header" onclick="verCarrito()">
-    🛒 <span id="contador-carrito">0</span> | $<span id="total-carrito">0</span>
-  </div>
+<header class="header-premium">
+    <div class="marca">Syncro</div>
+    
+    <div class="header-right">
+        <div class="carrito-header" onclick="verCarrito()">
+            <span class="cart-icon">🛒</span>
+            <div class="cart-info">
+                <span id="contador-carrito">0</span>
+                <span class="total-header">$<span id="total-carrito">0</span></span>
+            </div>
+        </div>
+    </div>
 </header>
 
-<h1>Elige una categoría</h1>
-<div class="categorias" id="lista-categorias"></div>
+<section class="hero-banner">
+    <div class="hero-overlay">
+        <h1>¿Antojo de algo real?</h1>
+        <p>Pedí ahora y te llega caliente.</p>
+        <div class="social-proof">
+            <span>⭐ 4.8 estrellas</span>
+            <span>•</span>
+            <span>Más de 500 pedidos hoy</span>
+        </div>
+    </div>
+</section>
 
+<h1 class="titulo-seccion">Elige tu categoría</h1>
+<div class="categorias" id="lista-categorias"></div> <script src="script.js"></script>
 <!-- Modal del carrito -->
 <div id="modal-carrito" class="modal-carrito">
   <div class="contenido-carrito">
@@ -43,8 +61,16 @@
 
     <button onclick="confirmarPedido()">Confirmar pedido</button>
   </div>
+ 
 </div>
-
+<footer class="footer-principal">
+    <div class="footer-content">
+        <p>© 2026 Syncro | Gestión Gastronómica</p>
+        <a href="https://tuweb.com/syncro" target="_blank" class="link-syncro">
+            🚀 ¿Querés este sistema en tu local? <strong>Contratar Syncro</strong>
+        </a>
+    </div>
+</footer>
 <script src="script.js"></script>
 </body>
 </html>

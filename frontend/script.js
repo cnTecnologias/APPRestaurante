@@ -23,21 +23,34 @@ function actualizarMetodoPago() {
 ========================= */
 
 async function cargarCategorias() {
-  const res = await fetch("http://localhost:3000/categorias");
-  const categorias = await res.json();
+    const contenedor = document.getElementById("lista-categorias");
+    
+    // Si no encuentra el div (porque estás en otra página), no hace nada y no tira error
+    if (!contenedor) return; 
 
-  const contenedor = document.getElementById("lista-categorias");
-  contenedor.innerHTML = "";
+    try {
+        const res = await fetch("http://localhost:3000/categorias");
+        const categorias = await res.json();
 
-  categorias.forEach(cat => {
-    const div = document.createElement("div");
-    div.classList.add("categoria");
-    div.innerHTML = `
-      <h3>${cat}</h3>
-      <button onclick="irACategoria('${cat}')">Ver</button>
-    `;
-    contenedor.appendChild(div);
-  });
+        contenedor.innerHTML = "";
+
+        categorias.forEach(cat => {
+            const div = document.createElement("div");
+            div.classList.add("categoria");
+            
+            // Hacemos que toda la tarjeta sea clickeable
+            div.onclick = () => irACategoria(cat);
+
+            div.innerHTML = `
+                <h3>${cat}</h3>
+                <span class="badge-premium">Explorar</span>
+            `;
+            contenedor.appendChild(div);
+        });
+    } catch (error) {
+        console.error("Error al conectar con el servidor:", error);
+        contenedor.innerHTML = "<p style='color:white;'>Prende el servidor (node server.js) loco!</p>";
+    }
 }
 
 function irACategoria(categoria) {
@@ -49,38 +62,46 @@ function irACategoria(categoria) {
 ========================= */
 
 async function cargarProductos(categoria) {
-  document.getElementById("titulo-categoria").innerText = categoria;
-  const contenedor = document.getElementById("productos");
-  contenedor.innerHTML = "Cargando...";
+    const titulo = document.getElementById("titulo-categoria");
+    const contenedor = document.getElementById("productos");
+    
+    if (titulo) titulo.innerText = categoria;
+    if (!contenedor) return;
 
-  try {
-    const res = await fetch(`http://localhost:3000/productos?categoria=${categoria}`);
-    const productos = await res.json();
+    contenedor.innerHTML = "<p>Cargando delicias...</p>";
 
-    contenedor.innerHTML = "";
+    try {
+        const res = await fetch(`http://localhost:3000/productos?categoria=${categoria}`);
+        const productos = await res.json();
 
-    productos.forEach((p, index) => {
-      const div = document.createElement("div");
-      div.classList.add("producto");
-      div.innerHTML = `
-        <h3>${p.nombre}</h3>
-        <p>Precio: $${p.precio}</p>
-        <div class="cantidad-control">
-          <button onclick="cambiarCantidad(${index}, -1)">–</button>
-          <span id="cant-${index}">1</span>
-          <button onclick="cambiarCantidad(${index}, 1)">+</button>
-        </div>
-        <button onclick="agregarAlCarrito(${index})">Agregar al carrito</button>
-      `;
-      contenedor.appendChild(div);
-    });
+        contenedor.innerHTML = "";
 
-    window.productosActuales = productos;
+        productos.forEach((p, index) => {
+            const div = document.createElement("div");
+            div.classList.add("producto");
+            div.innerHTML = `
+                <div class="producto-info">
+                    <h3>${p.nombre}</h3>
+                    <span class="precio">$${p.precio}</span>
+                    <div class="cantidad-control">
+                        <button onclick="cambiarCantidad(${index}, -1)">–</button>
+                        <span id="cant-${index}">1</span>
+                        <button onclick="cambiarCantidad(${index}, 1)">+</button>
+                    </div>
+                    <button class="btn-agregar" onclick="agregarAlCarrito(${index})">
+                        Añadir al pedido
+                    </button>
+                </div>
+            `;
+            contenedor.appendChild(div);
+        });
 
-  } catch (err) {
-    contenedor.innerHTML = "Error cargando productos";
-    console.error(err);
-  }
+        window.productosActuales = productos;
+
+    } catch (err) {
+        contenedor.innerHTML = "<p>Error al cargar los productos.</p>";
+        console.error(err);
+    }
 }
 
 function cambiarCantidad(index, cambio) {
