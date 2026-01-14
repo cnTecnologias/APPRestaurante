@@ -21,20 +21,51 @@ function actualizarMetodoPago() {
 /* =========================
    CATEGORÍAS
 ========================= */
+function cargarExtras(todas) {
+    const contenedorExtras = document.getElementById("lista-extras");
+    // Si no existe el div de extras en el HTML, no hace nada pero NO rompe el resto
+    if (!contenedorExtras) return; 
 
+    const extras = todas.filter(cat => 
+        cat.toLowerCase() === 'bebidas' || cat.toLowerCase() === 'postres'
+    );
+
+    contenedorExtras.innerHTML = "";
+    extras.forEach(ext => {
+        const div = document.createElement("div");
+        div.classList.add("extra-card");
+        div.onclick = () => irACategoria(ext);
+        const icono = ext.toLowerCase() === 'bebidas' ? '🥤' : '🍰';
+        div.innerHTML = `
+            <div class="extra-icon">${icono}</div>
+            <div class="extra-info">
+                <h4>${ext}</h4>
+                <span>Acompañá tu pedido</span>
+            </div>
+        `;
+        contenedorExtras.appendChild(div);
+    });
+}
 async function cargarCategorias() {
     const contenedor = document.getElementById("lista-categorias");
     
-    // Si no encuentra el div (porque estás en otra página), no hace nada y no tira error
+    // 1. Si no hay contenedor, abortamos misión sin errores
     if (!contenedor) return; 
 
     try {
+        // 2. Traemos los datos del servidor
         const res = await fetch("http://localhost:3000/categorias");
-        const categorias = await res.json();
+        const todasLasCategorias = await res.json();
+
+        // 3. Aplicamos el filtro para dejar fuera lo que va a ir a "Extras"
+        const principales = todasLasCategorias.filter(cat => 
+            cat.toLowerCase() !== 'bebidas' && cat.toLowerCase() !== 'postres'
+        );
 
         contenedor.innerHTML = "";
 
-        categorias.forEach(cat => {
+        // 4. Dibujamos solo las principales
+        principales.forEach(cat => {
             const div = document.createElement("div");
             div.classList.add("categoria");
             
@@ -47,12 +78,15 @@ async function cargarCategorias() {
             `;
             contenedor.appendChild(div);
         });
+
+        // 5. Una vez que terminamos con las principales, cargamos los extras abajo
+        cargarExtras(todasLasCategorias); 
+
     } catch (error) {
         console.error("Error al conectar con el servidor:", error);
-        contenedor.innerHTML = "<p style='color:white;'>Prende el servidor (node server.js) loco!</p>";
+        contenedor.innerHTML = "<p style='color:white;'>¡Error de conexión!</p>";
     }
 }
-
 function irACategoria(categoria) {
   window.location.href = `productos.html?categoria=${categoria}`;
 }

@@ -149,10 +149,35 @@ h1 {
 
 /* Ajuste para el título de abajo */
 .titulo-seccion {
-    font-size: 1.2rem;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 800;
     color: var(--text-blanco);
-    margin-top: 30px;
-    opacity: 0.9;
+    margin: 40px 0 10px 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: relative;
+    display: block;
+}
+
+
+.titulo-seccion::after {
+    content: "";
+    display: block;
+    width: 60px; /* Línea corta y elegante */
+    height: 4px;
+    background: var(--accent);
+    margin: 10px auto 0;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(242, 169, 74, 0.5); /* Resplandor sutil */
+}
+
+.subtitulo-seccion {
+    text-align: center;
+    color: var(--text-gris);
+    font-size: 0.9rem;
+    margin-bottom: 30px;
+    font-weight: 500;
 }
 
 /* style.css - PARTE 4: El Grid de Categorías */
@@ -442,49 +467,200 @@ h1 {
 }
 /* style.css - PARTE 7: Footer Global */
 
+/* style.css - Footer Pro */
+
 .footer-principal {
-    margin-top: 50px;
-    padding: 40px 20px;
-    background-color: #0f0f0f; /* Un gris un poco más claro que el fondo negro */
+    margin-top: 80px;
+    padding: 60px 20px 20px;
+    background: linear-gradient(to top, #000, #0f0f0f);
     border-top: 1px solid var(--glass);
-    text-align: center;
 }
 
-.footer-content p {
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+    max-width: 1000px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.footer-col h4 {
+    color: var(--accent);
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.footer-col a {
+    display: block;
     color: var(--text-gris);
-    font-size: 0.8rem;
+    text-decoration: none;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    transition: color 0.3s;
+}
+
+.footer-col a:hover {
+    color: var(--text-blanco);
+}
+
+.marca-footer {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--text-blanco);
+    display: block;
     margin-bottom: 10px;
 }
 
-.link-syncro {
-    display: inline-block;
-    color: var(--text-blanco);
-    text-decoration: none;
-    font-size: 0.9rem;
-    background: rgba(242, 169, 74, 0.1);
-    padding: 10px 20px;
+/* El detalle que llama la atención: Status Badge */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 255, 100, 0.1);
+    color: #00ff64;
+    padding: 5px 12px;
     border-radius: 50px;
-    border: 1px solid rgba(242, 169, 74, 0.3);
+    font-size: 0.75rem;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    background: #00ff64;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #00ff64;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.5); opacity: 0.5; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Botón de acción en el footer */
+.btn-syncro-footer {
+    background: var(--accent) !important;
+    color: black !important;
+    font-weight: 800;
+    text-align: center;
+    padding: 12px !important;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+.footer-bottom {
+    margin-top: 50px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    padding-top: 20px;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #444;
+}
+
+/* style.css - Modificar la Parte 4 */
+
+.categorias-wrapper {
+    background-color: #1a1a1a; /* El gris oscuro de la imagen */
+    margin: 20px auto;
+    padding: 30px 20px;
+    border-radius: 30px; /* Bordes bien redondeados como en el diseño */
+    max-width: 95%;
+    width: 1000px;
+    border: 1px solid rgba(255, 255, 255, 0.03); /* Un toque de brillo en el borde */
+}
+
+.categorias {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px;
+}
+
+
+.categoria {
+    /* ... lo que ya tenías ... */
+    background-color: #222; /* Un gris un poco más claro que el wrapper */
+    border-radius: 18px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+/* Para que se vea el "Desde $XXXX" como en tu imagen */
+.categoria-precio-info {
+    font-size: 0.7rem;
+    color: var(--text-gris);
+    font-weight: normal;
+}
+
+
+/* Extras */
+.extras-section {
+    max-width: 1000px;
+    margin: 50px auto;
+    padding: 0 20px;
+}
+
+.titulo-extras {
+    color: var(--text-blanco);
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    padding-left: 10px;
+    border-left: 4px solid var(--accent); /* Un detalle de color lateral */
+}
+
+.extras-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+}
+
+.extra-card {
+    background: var(--bg-card);
+    border: 1px dashed rgba(255, 255, 255, 0.1); /* Estilo "opcional" */
+    border-radius: 15px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
     transition: all 0.3s ease;
 }
 
-.link-syncro strong {
-    color: var(--accent);
-}
-
-.link-syncro:hover {
-    background: rgba(242, 169, 74, 0.2);
+.extra-card:hover {
+    border-style: solid;
+    border-color: var(--accent);
     transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    background: rgba(242, 169, 74, 0.05);
 }
 
+.extra-icon {
+    font-size: 1.8rem;
+    background: #1e1e1e;
+    width: 55px;
+    height: 55px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+}
 
+.extra-info h4 {
+    font-size: 1rem;
+    color: var(--text-blanco);
+    margin: 0;
+}
 
-
-
-
-
-
+.extra-info span {
+    font-size: 0.8rem;
+    color: var(--accent);
+    font-weight: 600;
+}
 
 
 
