@@ -383,7 +383,25 @@ async function confirmarPedido() {
   }
 }
 
+function volverACategorias() {
+    console.log("Intentando volver..."); // Esto es para que veas en la consola (F12) si el clic funciona
 
+    // 1. Ocultar la sección de productos
+    const secProductos = document.getElementById("seccion-productos");
+    if(secProductos) secProductos.style.display = "none";
+
+    // 2. Mostrar todo lo que ocultamos al entrar
+    const hero = document.getElementById("hero");
+    const categorias = document.querySelector(".categorias-wrapper");
+    const extras = document.querySelector(".extras-section");
+
+    if(hero) hero.style.display = "block";
+    if(categorias) categorias.style.display = "block";
+    if(extras) extras.style.display = "block";
+
+    // 3. Volver arriba de todo
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 /* =========================
    INIT
 ========================= */
