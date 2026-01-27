@@ -5,7 +5,7 @@ let pedidosCache = [];
 async function cargarDatosAdmin() {
     try {
         // USAMOS LA RUTA QUE DEVUELVE LOS PEDIDOS REALES
-        const respuesta = await fetch("http://localhost:3000/pedidos");
+        const respuesta = await fetch("http://localhost:3000/api/pedidos");
         pedidosCache = await respuesta.json();
         
         renderizarTabla(pedidosCache);

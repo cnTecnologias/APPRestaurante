@@ -163,12 +163,9 @@ app.post("/pedido", (req, res) => {
 // --- RUTAS DE ADMINISTRACIÓN ---
 // verlo a futuro 
 // Ruta para obtener todos los pedidos (Solo para el dueño)
-app.get("/pedidos", (req, res) => {
+app.get("/api/pedidos", (req, res) => {
     obtenerPedidos((err, pedidos) => {
-        if (err) {
-            console.error("Error al obtener pedidos:", err);
-            return res.status(500).json({ error: "Error interno del servidor" });
-        }
+        if (err) return res.status(500).json({ error: "Error" });
         res.json(pedidos);
     });
 });
