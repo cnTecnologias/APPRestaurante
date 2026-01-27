@@ -21,13 +21,17 @@ function renderizarTabla(lista) {
     const tabla = document.getElementById("lista-pedidos");
     tabla.innerHTML = ""; 
 
-    // Usamos reverse() para ver los últimos pedidos arriba
-    lista.reverse().forEach(pedido => {
+    // IMPORTANTE: .slice().reverse() para no modificar el array original permanentemente
+    lista.slice().reverse().forEach(pedido => {
         const fila = document.createElement("tr");
         
-        // Si por alguna razón el pedido no tiene estado, le ponemos 'Pendiente' por defecto
         const estadoActual = pedido.estado || 'Pendiente';
-        const claseEstado = estadoActual === 'Pendiente' ? 'estado-pendiente' : 'estado-entregado';
+        
+        // Asignamos la clase según el estado para el color
+        let claseEstado = "";
+        if (estadoActual === 'Pendiente') claseEstado = "estado-pendiente";
+        else if (estadoActual === 'Entregado') claseEstado = "estado-entregado";
+        else claseEstado = "estado-cancelado"; // Por si agregás cancelados
 
         fila.innerHTML = `
             <td>#${pedido.id}</td>
@@ -35,14 +39,36 @@ function renderizarTabla(lista) {
             <td><span class="badge ${pedido.metodo_pago}">${pedido.metodo_pago}</span></td>
             <td><strong>$${pedido.total.toLocaleString("es-AR")}</strong></td>
             <td>
-                <button class="btn-estado ${claseEstado}" onclick="cambiarEstado(${pedido.id}, '${estadoActual}')">
-                    ${estadoActual}
+                <button class="btn-estado ${claseEstado}" 
+                        onclick="cambiarEstado(${pedido.id}, '${estadoActual}')">
+                    ${estadoActual.toUpperCase()}
                 </button>
             </td>
-            <td><button class="btn-borrar" onclick="eliminarPedido(${pedido.id})">🗑️</button></td>
+            <td>
+                <button class="btn-cancelar" onclick="cancelarPedidoConMotivo(${pedido.id})">
+                    ✖
+                </button>
+            </td>
         `;
         tabla.appendChild(fila);
     });
+}
+
+async function cancelarPedidoConMotivo(id) {
+    const motivo = prompt("¿Por qué cancelas este pedido?");
+    if (!motivo) return;
+
+    const res = await fetch(`http://localhost:3000/api/pedidos/${id}/estado`, {
+        method: 'PUT', // Usamos PUT que es el que unificamos
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nuevoEstado: 'cancelado', motivo: motivo })
+    });
+
+    if (res.ok) {
+        cargarDatosAdmin(); // Esto vuelve a pintar la tabla
+    } else {
+        alert("Error en el servidor al cancelar");
+    }
 }
 
 // 3. FILTRADO INTERACTIVO

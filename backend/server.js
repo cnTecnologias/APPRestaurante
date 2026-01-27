@@ -189,18 +189,22 @@ app.put('/api/pedidos/:id/estado', (req, res) => {
     });
 });
 //Borrar un pedido del admin 
-app.delete('/api/pedidos/:id', (req, res) => {
+// Única ruta para cambiar estados (Entregado, Cancelado, etc.)
+app.put('/api/pedidos/:id/estado', (req, res) => {
     const { id } = req.params;
-    const { eliminarPedidoDB } = require("./db"); // Importamos la función nueva
+    const { nuevoEstado, motivo } = req.body; // Recibimos el motivo también
+    const { actualizarEstadoPedido } = require("./db");
 
-    eliminarPedidoDB(id, (err) => {
-        if (err) {
-            console.error("Error al borrar pedido:", err.message);
-            return res.status(500).json({ error: "No se pudo borrar el pedido" });
-        }
-        res.json({ mensaje: "Pedido eliminado correctamente" });
+    actualizarEstadoPedido(id, nuevoEstado, motivo, (err) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ mensaje: "Estado actualizado con éxito" });
     });
 });
+
+
+
+
+
 
 // levantar server AL FINAL
 app.listen(PORT, () => {

@@ -123,6 +123,10 @@ db.run(`ALTER TABLE pedidos ADD COLUMN estado TEXT DEFAULT 'Pendiente'`, (err) =
 function eliminarPedidoDB(id, callback) {
   db.run("DELETE FROM pedidos WHERE id = ?", [id], callback);
 }
+function actualizarEstadoPedido(id, nuevoEstado, motivo, callback) {
+    const sql = `UPDATE pedidos SET estado = ?, motivo_cancelacion = ? WHERE id = ?`;
+    db.run(sql, [nuevoEstado, motivo || null, id], callback);
+}
 
 module.exports = {
   db,

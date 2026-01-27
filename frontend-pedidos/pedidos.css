@@ -120,12 +120,34 @@ td {
     cursor: pointer;
 }
 
-.btn-borrar {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1.2rem;
-    transition: transform 0.2s;
+
+
+/* Botón o Celda en Pendiente */
+.estado-pendiente {
+    background-color: #ff9800 !important; /* Naranja fuerte */
+    color: white;
+    font-weight: bold;
+    border-radius: 20px;
+     border: none;
 }
 
-.btn-borrar:hover { transform: scale(1.2); }
+/* Botón o Celda en Entregado */
+.estado-entregado {
+    background-color: #4caf50 !important; /* Verde éxito */
+    color: white;
+    font-weight: bold;
+    border-radius: 20px;
+    border: none;
+}
+
+/* Botón o Celda en Cancelado */
+
+.estado-cancelado {
+    background-color: #d32f2f !important; /* Rojo oscuro */
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 20px;
+    padding: 8px;
+
+}
