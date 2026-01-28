@@ -72,6 +72,41 @@ body {
 
 #busqueda { flex-grow: 1; }
 
+/* Contenedor de los filtros */
+.table-controls {
+    display: flex;
+    gap: 15px; /* Espacio entre el buscador y los selectores */
+    margin-bottom: 20px;
+    align-items: center;
+    flex-wrap: wrap; /* Por si la pantalla es chica, que bajen sin romperse */
+}
+
+/* Estilo para los selectores y el input */
+#busqueda, #filtro-pago, #filtro-estado {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+/* Diferenciar los selectores por color de borde para que el empleado no se pierda */
+#filtro-pago {
+    border-left: 4px solid #007bff; /* Azul para pagos */
+    background-color: #f0f7ff;
+}
+
+#filtro-estado {
+    border-left: 4px solid #28a745; /* Verde para estados */
+    background-color: #f2faf3;
+}
+
+/* Efecto al pasar el mouse o clickear */
+#busqueda:focus, select:focus {
+    border-color: #333;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
 /* Tabla */
 .table-container {
     background: var(--card-bg);
