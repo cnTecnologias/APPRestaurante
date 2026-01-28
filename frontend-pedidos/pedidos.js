@@ -21,21 +21,24 @@ function renderizarTabla(lista) {
     const tabla = document.getElementById("lista-pedidos");
     tabla.innerHTML = ""; 
 
-    // IMPORTANTE: .slice().reverse() para no modificar el array original permanentemente
     lista.slice().reverse().forEach(pedido => {
+        // 1. CREAMOS LA FILA
         const fila = document.createElement("tr");
         
         const estadoActual = pedido.estado || 'Pendiente';
         
-        // Asignamos la clase según el estado para el color
         let claseEstado = "";
         if (estadoActual === 'Pendiente') claseEstado = "estado-pendiente";
         else if (estadoActual === 'Entregado') claseEstado = "estado-entregado";
-        else claseEstado = "estado-cancelado"; // Por si agregás cancelados
+        else claseEstado = "estado-cancelado";
 
+        // 2. RELLENAMOS LA FILA (Asegurate de incluir los botones al final)
         fila.innerHTML = `
             <td>#${pedido.id}</td>
             <td>${pedido.fecha}</td>
+            <td class="col-detalle">
+                <div class="productos-lista">${pedido.productos || 'Sin detalle'}</div>
+            </td>
             <td><span class="badge ${pedido.metodo_pago}">${pedido.metodo_pago}</span></td>
             <td><strong>$${pedido.total.toLocaleString("es-AR")}</strong></td>
             <td>
@@ -50,8 +53,10 @@ function renderizarTabla(lista) {
                 </button>
             </td>
         `;
+
+        // 3. METEMOS LA FILA EN LA TABLA (ESTO DEBE ESTAR ADENTRO DEL LOOP)
         tabla.appendChild(fila);
-    });
+    }); // <--- AQUÍ TERMINA EL LOOP
 }
 
 async function cancelarPedidoConMotivo(id) {
@@ -163,3 +168,4 @@ async function eliminarPedido(id) {
         }
     }
 }
+

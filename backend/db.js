@@ -17,16 +17,24 @@ db.run(`
     cantidad INTEGER
   )
 `);
-//crear tabla para pedidos 
+
+// Crear tabla para pedidos con TODAS las columnas necesarias
 db.run(`
   CREATE TABLE IF NOT EXISTS pedidos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     fecha TEXT,
+    productos TEXT,           -- Agregado
+    motivo_cancelacion TEXT,  -- Agregado para auditoría
     total INTEGER,
     metodo_pago TEXT,
     estado TEXT DEFAULT 'Pendiente' 
-  )`);
-  
+  )
+`);
+
+// Ejecutar estas líneas UNA SOLA VEZ para actualizar si la tabla ya existía
+db.run(`ALTER TABLE pedidos ADD COLUMN productos TEXT`, (err) => {});
+db.run(`ALTER TABLE pedidos ADD COLUMN motivo_cancelacion TEXT`, (err) => {});
+
 
 // Obtener carrito
 function obtenerCarrito(callback) {
@@ -99,18 +107,21 @@ function obtenerPedidos(callback) {
 
 
 //Guardar pedido 
-function guardarPedido(pedido, callback) {
-  const { fecha, total, metodoPago } = pedido;
-  // Agregamos 'estado' en el INSERT y le pasamos 'Pendiente'
-  db.run(
-    `INSERT INTO pedidos (fecha, total, metodo_pago, estado) VALUES (?, ?, ?, ?)`,
-    [fecha, total, metodoPago, 'Pendiente'], 
-    callback
-  );
+function crearPedidoDB(fecha, productos, total, metodoPago, callback) {
+    const sql = `INSERT INTO pedidos (fecha, productos, total, metodo_pago, estado) 
+                 VALUES (?, ?, ?, ?, 'Pendiente')`;
+    
+    // Usamos function(err) tradicional para poder acceder a 'this.lastID'
+    db.run(sql, [fecha, productos, total, metodoPago], function(err) {
+        if (err) return callback(err);
+        callback(null, this.lastID); 
+    });
 }
-function actualizarEstadoPedido(id, nuevoEstado, callback) {
-  db.run('UPDATE pedidos SET estado = ? WHERE id = ?', [nuevoEstado, id], callback);
-}
+
+
+
+
+
 
 db.run(`ALTER TABLE pedidos ADD COLUMN estado TEXT DEFAULT 'Pendiente'`, (err) => {
     if (err) {
@@ -135,7 +146,7 @@ module.exports = {
   actualizarCantidad,
   eliminarProducto,
   vaciarCarrito,
-  guardarPedido,
+  crearPedidoDB,          // Cambiado
   obtenerPedidos,
   actualizarEstadoPedido,
   eliminarPedidoDB

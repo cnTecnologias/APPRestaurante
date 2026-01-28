@@ -122,42 +122,38 @@ app.delete("/carrito", (req, res) => {
 });
 //ID pedido - fecha hora
 let numeroPedido = 1;
-
+//Ojo con esta ruta, se trabajo en ella
 app.post("/pedido", (req, res) => {
-  const metodoPago = req.body.metodoPago || "Efectivo"; 
-  
-  obtenerCarrito((err, items) => {
-    if (err) return res.status(500).json({ error: "Error al obtener carrito" });
-    if (items.length === 0) return res.status(400).json({ error: "Carrito vacío" });
+    // 1. Recibimos todo lo que el cliente ya calculó en el frontend
+    const { metodoPago, productos, total } = req.body;
+    const fecha = new Date().toLocaleString("es-AR");
 
-    // 1. TENÉS QUE CALCULAR EL TOTAL ACÁ ADENTRO
-    let totalCalculado = 0;
-    items.forEach(p => {
-      totalCalculado += p.precio * p.cantidad;
-    });
+    // 2. Validación de seguridad básica
+    if (!productos || !total) {
+        return res.status(400).json({ error: "Datos del pedido incompletos" });
+    }
 
-    const pedido = {
-      fecha: new Date().toLocaleString("es-AR"),
-      total: totalCalculado, // <--- AHORA SÍ: Usamos la variable que acabamos de crear
-      metodoPago: metodoPago
-    };
+    // 3. Guardamos directamente en la DB
+    // Importante: Asegurate que crearPedidoDB en db.js reciba estos 4 argumentos
+    const { crearPedidoDB, vaciarCarrito } = require("./db"); 
 
-    guardarPedido(pedido, function(err) {
-      if (err) return res.status(500).json({ error: "Error al guardar" });
-      
-      const nuevoId = this.lastID; 
+    crearPedidoDB(fecha, productos, total, metodoPago, (err, nuevoId) => {
+        if (err) {
+            console.error("Error al guardar pedido:", err.message);
+            return res.status(500).json({ error: "Error al guardar en base de datos" });
+        }
 
-      vaciarCarrito((err) => {
-        if (err) return res.status(500).json({ error: "Error al vaciar" });
-
-        res.json({
-          mensaje: "Pedido confirmado",
-          id: nuevoId,
-          pedido
+        // 4. Vaciamos el carrito temporal después de confirmar el pedido
+        vaciarCarrito((err) => {
+            if (err) console.error("Error al vaciar carrito:", err.message);
+            
+            // 5. Respondemos al cliente con el ID generado para su WhatsApp
+            res.json({ 
+                id: nuevoId, 
+                pedido: { fecha, productos, total, metodoPago } 
+            });
         });
-      });
     });
-  });
 });
 
 // --- RUTAS DE ADMINISTRACIÓN ---

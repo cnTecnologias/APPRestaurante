@@ -151,3 +151,41 @@ td {
     padding: 8px;
 
 }
+
+/*Detalles del pedido*/
+.col-detalle {
+    max-width: 250px; /* Evita que la tabla se estire demasiado */
+    text-align: left;
+}
+
+.productos-lista {
+    font-size: 0.9rem;
+    color: #333;
+    line-height: 1.2;
+}
+
+.notas-cliente {
+    display: block;
+    color: #d32f2f; /* Rojo suave para que el empleado vea las aclaraciones */
+    font-style: italic;
+    margin-top: 4px;
+}
+
+.col-detalle {
+    text-align: left;
+    min-width: 200px;
+}
+
+.productos-lista {
+    font-size: 0.85rem;
+    background: #f4f4f4;
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: #333;
+    border-left: 3px solid #ff9800;
+}
+
+.productos-lista:contains('Sin detalle') {
+    color: #bbb;
+    font-style: italic;
+}

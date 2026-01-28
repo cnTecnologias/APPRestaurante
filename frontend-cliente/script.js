@@ -327,12 +327,30 @@ function generarResumen(carrito) {
   return texto;
 }
 
+
+
+
+
+
+
+/* Se trabajo en esta funcion ojo con los ultimos dos const y ultimas dos lineas dentro del fetch */
+
+
+
+
+
+
+
+
 async function confirmarPedido() {
   // 1. Capturamos el método de pago antes de hacer nada
   const radioActivo = document.querySelector('input[name="pago"]:checked') || 
                       document.querySelector('input[name="pago-modal"]:checked');
   
   const metodoSeleccionado = radioActivo ? radioActivo.value : "Efectivo";
+
+  const detalleProductos = carrito.items.map(i => `${i.cantidad}x ${i.nombre}`).join(", ");
+  const totalPedido = carrito.items.reduce((acc, i) => acc + (i.precio * i.cantidad), 0);
 
   // Actualizamos el objeto carrito local para que el resumen de WhatsApp salga bien
   carrito.metodoPago = metodoSeleccionado;
@@ -345,7 +363,9 @@ async function confirmarPedido() {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        metodoPago: metodoSeleccionado
+        metodoPago: metodoSeleccionado,
+        productos: detalleProductos, // <--- EL DETALLE QUE FALTABA
+        total: totalPedido           // <--- EL TOTAL PARA LA DB
       })
     });
 
@@ -402,6 +422,16 @@ function volverACategorias() {
     // 3. Volver arriba de todo
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
+
+
+
+
+
+
+
+
+
 /* =========================
    INIT
 ========================= */
