@@ -21,13 +21,21 @@
     </div>
 
     <div class="table-controls">
-        <input type="text" id="busqueda" placeholder="Buscar por fecha..." onkeyup="filtrar()">
-        <select id="filtro-pago" onchange="filtrar()">
-            <option value="todos">Todos los pagos</option>
-            <option value="Efectivo">Efectivo</option>
-            <option value="Transferencia">Transferencia</option>
-        </select>
-    </div>
+    <input type="text" id="busqueda" placeholder="Buscar por fecha..." onkeyup="filtrar()">
+    
+    <select id="filtro-pago" onchange="filtrar()">
+        <option value="todos">Todos los pagos</option>
+        <option value="Efectivo">Efectivo</option>
+        <option value="Transferencia">Transferencia</option>
+    </select>
+
+    <select id="filtro-estado" onchange="filtrar()">
+        <option value="todos">Todos los estados</option>
+        <option value="Pendiente">Pendientes</option>
+        <option value="Entregado">Entregados</option>
+        <option value="Cancelado">Cancelados</option>
+    </select>
+</div>
 
     <div class="table-container">
         <table>

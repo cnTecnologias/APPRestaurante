@@ -78,18 +78,23 @@ async function cancelarPedidoConMotivo(id) {
 
 // 3. FILTRADO INTERACTIVO
 function filtrar() {
-    // CORREGIDO: Usamos los IDs de tu HTML 'busqueda' y 'filtro-pago'
     const busqueda = document.getElementById("busqueda").value.toLowerCase();
     const metodo = document.getElementById("filtro-pago").value;
+    const estado = document.getElementById("filtro-estado").value; // Nuevo
 
     const filtrados = pedidosCache.filter(p => {
         const coincideTexto = p.fecha.toLowerCase().includes(busqueda);
         const coincideMetodo = metodo === "todos" || p.metodo_pago === metodo;
-        return coincideTexto && coincideMetodo;
+        
+        // Nueva condición: comparamos ignorando mayúsculas/minúsculas
+        const coincideEstado = estado === "todos" || 
+                               (p.estado && p.estado.toLowerCase() === estado.toLowerCase());
+
+        return coincideTexto && coincideMetodo && coincideEstado;
     });
 
     renderizarTabla(filtrados);
-    actualizarResumen(filtrados); // Para que el total cambie según el filtro
+    actualizarResumen(filtrados); 
 }
 
 // 4. RESUMEN: Calcula el total y cantidad
