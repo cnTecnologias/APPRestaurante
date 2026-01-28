@@ -94,11 +94,29 @@ function filtrar() {
 
 // 4. RESUMEN: Calcula el total y cantidad
 function actualizarResumen(lista) {
-    const recaudado = lista.reduce((acc, p) => acc + p.total, 0);
+    // 1. Filtramos para que SOLO sume lo que no está cancelado
+    // Usamos toLowerCase() para que no importe si es 'Cancelado' o 'CANCELADO'
+    const pedidosValidos = lista.filter(p => 
+        p.estado && p.estado.toLowerCase() !== 'cancelado'
+    );
+
+    // 2. Calculamos el total de dinero real
+    const recaudado = pedidosValidos.reduce((acc, p) => acc + (p.total || 0), 0);
     
-    // CORREGIDO: Usamos los IDs de tu HTML 'total-dinero' y 'total-pedidos'
-    document.getElementById("total-dinero").innerText = `$${recaudado.toLocaleString("es-AR")}`;
-    document.getElementById("total-pedidos").innerText = lista.length;
+    // 3. Pintamos en el HTML
+    const elementoDinero = document.getElementById("total-dinero");
+    const elementoPedidos = document.getElementById("total-pedidos");
+
+    if (elementoDinero) {
+        elementoDinero.innerText = `$${recaudado.toLocaleString("es-AR")}`;
+    }
+    
+    if (elementoPedidos) {
+        // Aquí decidís: ¿Querés ver todos los pedidos (lista.length) 
+        // o solo los que no se cancelaron (pedidosValidos.length)? 
+        // Para el jefe, mejor ver solo los reales:
+        elementoPedidos.innerText = pedidosValidos.length;
+    }
 }
 
 // Escuchamos cuando carga el HTML para arrancar
